@@ -14,6 +14,8 @@ import java.util.List;
 
 
 public class Parser implements IParser {
+    private static final String ERROR_VALUES_IS_NULL = "Values is null";
+    private static final String ERROR_DATE_IS_NULL = "Date is null";
     private final char csvSplitBy;
     private final String dateFormat;
     private final Logger logger = LoggerFactory.getLogger(Parser.class);
@@ -36,7 +38,7 @@ public class Parser implements IParser {
 
     private BankCard converter(String[] values) {
         if (values == null || values[0] == null || values[1] == null || values[2] == null || values[3] == null) {
-            logger.error("values is empty");
+            logger.error(ERROR_VALUES_IS_NULL);
             return null;
         } else {
             var bankCard = new BankCard();
@@ -44,18 +46,26 @@ public class Parser implements IParser {
             bankCard.setPassword(Integer.parseInt(values[1]));
             bankCard.setBalance(Double.parseDouble(values[2]));
             bankCard.setState(BankCardState.valueOf(values[3]));
-            if (bankCard.getState() == BankCardState.LOCKED) {
+            if (bankCard.getState() == BankCardState.LOCKED && values[4] != null && values[5] != null) {
                 var date = values[4] + " " + values[5];
-                var format = new SimpleDateFormat(dateFormat);
-                Date dateLocked = null;
-                try {
-                    dateLocked = format.parse(date);
-                } catch (ParseException e) {
-                    logger.error(e.getMessage());
-                }
+                Date dateLocked = converterDateLocked(date);
                 bankCard.setDateLocked(dateLocked);
             }
             return bankCard;
         }
+    }
+
+    private Date converterDateLocked(String date) {
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        Date dateLocked = null;
+        try {
+            if (date == null) {
+                throw new IllegalArgumentException(ERROR_DATE_IS_NULL);
+            }
+            dateLocked = format.parse(date);
+        } catch (ParseException | IllegalArgumentException e) {
+            logger.error(e.getMessage());
+        }
+        return dateLocked;
     }
 }

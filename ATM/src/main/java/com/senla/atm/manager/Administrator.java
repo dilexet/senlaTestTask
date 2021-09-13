@@ -1,55 +1,50 @@
 package com.senla.atm.manager;
 
+import com.senla.atm.entity.ATM;
 import com.senla.atm.service.IAtmManagement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Administrator {
+    private static final String MSG_GET_BALANCE = "Your balance is ";
+    private static final String MSG_BANK_CASH_LIMIT = "The bank has ";
+    private static final String MSG_OPERATION_SUCCESS = "Operation was successfully completed";
+    private static final String MSG_NOT_ENOUGH_MONEY = "You don't have enough money or bank limit exceeded";
+    private static final String MSG_LIMIT_EXCEEDED = "Limit is exceeded";
+    private static final String MSG_CARD_LOCK = "Your card is blocked until: ";
+
+
     private final IAtmManagement atmManagement;
-    private final Logger logger = LoggerFactory.getLogger(Administrator.class);
 
     public Administrator(IAtmManagement atmManagement) {
         this.atmManagement = atmManagement;
     }
 
     public boolean checkBankCard(String cardNumber) {
-        var isCardFound = atmManagement.checkCard(cardNumber);
-        if (!isCardFound) {
-            logger.info("Карточка не найдена или заблокирована");
-        } else {
-            logger.info("Карточка действительна");
-        }
-        return isCardFound;
+        return atmManagement.checkCard(cardNumber);
     }
 
     public boolean authorize(String cardNumber, int password) {
-        var isAuthorize = atmManagement.authorize(cardNumber, password);
-        if (!isAuthorize) {
-            logger.info("Пароль введён неверно");
-        } else {
-            logger.info("Авторизация прошла успешно");
-        }
-        return isAuthorize;
+        return atmManagement.authorize(cardNumber, password);
     }
 
     public String checkBalance(String cardNumber) {
         var balance = atmManagement.checkBalance(cardNumber);
-        return "Ваш баланс: " + balance;
+        return MSG_GET_BALANCE + balance;
     }
 
     public String withdrawMoney(String cardNumber, double money) {
+        System.out.println(MSG_BANK_CASH_LIMIT + ATM.getInstance().getBankCashLimit());
         var result = atmManagement.withdrawMoney(cardNumber, money);
-        return result ? "Операция прошла успешно" : "Недостаточно средств на карте";
+        return result ? MSG_OPERATION_SUCCESS : MSG_NOT_ENOUGH_MONEY;
     }
 
     public String putMoney(String cardNumber, double money) {
         var result = atmManagement.putMoney(cardNumber, money);
-        return result ? "Операция прошла успешно" : "Превышен лимит пополнения";
+        return result ? MSG_OPERATION_SUCCESS : MSG_LIMIT_EXCEEDED;
     }
 
     public String lock(String cardNumber) {
         var date = atmManagement.lock(cardNumber);
-        return "Ваша карта заблокирована до: '" + date.toString() + "'";
+        return MSG_CARD_LOCK + date.toString();
     }
 
     public void unlock() {

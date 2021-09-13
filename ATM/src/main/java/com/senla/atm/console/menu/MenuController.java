@@ -1,4 +1,4 @@
-package com.senla.atm.console;
+package com.senla.atm.console.menu;
 
 import com.senla.atm.console.actions.atmactions.AuthorizeAction;
 import com.senla.atm.manager.Administrator;
@@ -8,14 +8,14 @@ import org.slf4j.LoggerFactory;
 import java.util.Scanner;
 
 public class MenuController {
-    private final Builder builder;
-    private final Navigator navigator;
+    private final MenuBuilder menuBuilder;
+    private final MenuNavigator menuNavigator;
     private final Administrator administrator;
     private final Logger logger = LoggerFactory.getLogger(MenuController.class);
 
-    public MenuController(Builder builder, Navigator navigator, Administrator administrator) {
-        this.builder = builder;
-        this.navigator = navigator;
+    public MenuController(MenuBuilder menuBuilder, MenuNavigator menuNavigator, Administrator administrator) {
+        this.menuBuilder = menuBuilder;
+        this.menuNavigator = menuNavigator;
         this.administrator = administrator;
     }
 
@@ -28,14 +28,14 @@ public class MenuController {
             return;
         }
 
-        builder.buildMenu(administrator);
-        navigator.setCurrentMenu(builder.getRootMenu());
-        navigator.printMenu();
+        menuBuilder.buildMenu(administrator);
+        menuNavigator.setCurrentMenu(menuBuilder.getRootMenu());
+        menuNavigator.printMenu();
         Scanner scanner = new Scanner(System.in);
         while (true) {
             int choice = scanner.nextInt();
             try {
-                navigator.navigate(choice, validCardNumber);
+                menuNavigator.executeCommand(choice, validCardNumber);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 break;

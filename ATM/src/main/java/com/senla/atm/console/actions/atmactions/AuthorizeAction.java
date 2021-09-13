@@ -8,6 +8,12 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class AuthorizeAction implements IAction {
+    private static final String REGEX_VALID_CARD = "regForValidCard";
+    private static final String MSG_FORMAT_NUMBER_CARD = "Enter the card number in the format: 'xxxx-xxxx-xxxx-xxxx'";
+    private static final String MSG_ERROR_CARD_INVALID = "Card is invalid or locked";
+    private static final String MSG_PASSWORD_CARD = "Enter the card password in the format: 'xxxx'";
+    private static final String MSG_NUMBER_ATTEMPTS = "Attempts remaining: ";
+
     private final Administrator administrator;
 
     public AuthorizeAction(Administrator administrator) {
@@ -16,7 +22,7 @@ public class AuthorizeAction implements IAction {
 
     @Override
     public Object execute(Object obj) {
-        var regForValidCard = Properties.getInstance().getProperty("regForValidCard");
+        var regForValidCard = Properties.getInstance().getProperty(REGEX_VALID_CARD);
         Scanner scanner = new Scanner(System.in);
 
         String cardNumber;
@@ -25,20 +31,20 @@ public class AuthorizeAction implements IAction {
         int numberOfAttempts = 3;
 
         do {
-            System.out.println("Введите номер карточки в формате: 'xxxx-xxxx-xxxx-xxxx'");
+            System.out.println(MSG_FORMAT_NUMBER_CARD);
             cardNumber = scanner.nextLine();
             isValid = Pattern.matches(regForValidCard, cardNumber);
         } while (!isValid);
 
         var isActive = administrator.checkBankCard(cardNumber);
         if (!isActive) {
-            System.out.println("Card is invalid or locked");
+            System.out.println(MSG_ERROR_CARD_INVALID);
             return null;
         }
-        System.out.println("Введите пин-код в формате: 'xxxx'");
+        System.out.println(MSG_PASSWORD_CARD);
 
         while (numberOfAttempts > 0) {
-            System.out.println("Попыток осталось: " + numberOfAttempts);
+            System.out.println(MSG_NUMBER_ATTEMPTS + numberOfAttempts);
             password = scanner.nextInt();
             if (administrator.authorize(cardNumber, password)) {
                 return cardNumber;

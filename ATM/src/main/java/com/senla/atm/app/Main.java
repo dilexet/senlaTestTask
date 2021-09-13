@@ -11,6 +11,9 @@ public class Main {
         try {
             var menu = new Initializer().initialize();
             menu.run();
+            System.out.println("Press enter to exit...");
+            //noinspection ResultOfMethodCallIgnored
+            System.in.read();
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

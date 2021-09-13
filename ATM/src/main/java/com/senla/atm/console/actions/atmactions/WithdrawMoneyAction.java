@@ -9,6 +9,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class WithdrawMoneyAction implements IAction {
+    private static final String MSG_SUM_WITHDRAW = "Enter the amount to withdraw money: ";
+    private static final String ERROR_INPUT_AMOUNT = "Amount input error";
     private final Administrator administrator;
     private final Logger logger = LoggerFactory.getLogger(WithdrawMoneyAction.class);
 
@@ -22,14 +24,13 @@ public class WithdrawMoneyAction implements IAction {
         double money;
         try {
             do {
-                System.out.println("Введите сумму которую хотите снять: ");
+                System.out.println(MSG_SUM_WITHDRAW);
                 money = scanner.nextDouble();
             } while (money <= 0);
+            System.out.println(administrator.withdrawMoney(obj.toString(), money));
         } catch (InputMismatchException e) {
-            logger.error("Ошибка ввода числа");
-            return null;
+            logger.error(ERROR_INPUT_AMOUNT);
         }
-        System.out.println(administrator.withdrawMoney(obj.toString(), money));
         return null;
     }
 }

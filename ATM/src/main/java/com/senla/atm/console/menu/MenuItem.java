@@ -1,4 +1,4 @@
-package com.senla.atm.console;
+package com.senla.atm.console.menu;
 
 import com.senla.atm.console.actions.IAction;
 

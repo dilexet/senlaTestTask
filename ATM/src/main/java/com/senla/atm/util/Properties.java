@@ -7,6 +7,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Properties {
+    private static final String PROPERTY_FILE_NAME = "app.properties";
+    private static final String ERROR_PROPERTY_NOT_FOUND = "Property not found";
+
+
     private static Properties properties = null;
     private final Logger logger = LoggerFactory.getLogger(Properties.class);
 
@@ -21,13 +25,13 @@ public class Properties {
     public String getProperty(String propertyName) {
         java.util.Properties props = new java.util.Properties();
         try {
-            props.load(new FileInputStream("app.properties"));
+            props.load(new FileInputStream(PROPERTY_FILE_NAME));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
         String property = props.getProperty(propertyName);
         if (property == null) {
-            logger.error("Property not found");
+            logger.error(ERROR_PROPERTY_NOT_FOUND);
         }
         return property;
     }

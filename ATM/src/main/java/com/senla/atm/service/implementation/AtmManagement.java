@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class AtmManagement implements IAtmManagement {
+    private static final String INFO_BANK_CARD_UNLOCKED = "Bank card is unlocked: ";
     private final IAtmDao atmDao;
     private final Logger logger = LoggerFactory.getLogger(AtmManagement.class);
 
@@ -36,14 +37,12 @@ public class AtmManagement implements IAtmManagement {
 
     public boolean withdrawMoney(String cardNumber, double money) {
         var atmLimit = ATM.getInstance().getBankCashLimit();
-        logger.info("Имеется в банкомате: " + ATM.getInstance().getBankCashLimit());
         var bankCard = atmDao.getByCardNumber(cardNumber);
         var balance = bankCard.getBalance();
         if (balance - money >= 0 && atmLimit > money) {
             bankCard.setBalance(balance - money);
             ATM.getInstance().setBankCashLimit(atmLimit - money);
             atmDao.update(bankCard);
-            logger.info("Имеется в банкомате: " + ATM.getInstance().getBankCashLimit());
             return true;
         }
         return false;
@@ -51,7 +50,6 @@ public class AtmManagement implements IAtmManagement {
 
     public boolean putMoney(String cardNumber, double money) {
         var atmLimit = ATM.getInstance().getBankCashLimit();
-        logger.info("Имеется в банкомате: " + ATM.getInstance().getBankCashLimit());
         if (money > 1000000) {
             return false;
         }
@@ -60,7 +58,6 @@ public class AtmManagement implements IAtmManagement {
         bankCard.setBalance(balance + money);
         ATM.getInstance().setBankCashLimit(atmLimit + money);
         atmDao.update(bankCard);
-        logger.info("Имеется в банкомате: " + ATM.getInstance().getBankCashLimit());
         return true;
     }
 
@@ -84,7 +81,7 @@ public class AtmManagement implements IAtmManagement {
             bankCard.setState(BankCardState.ACTIVE);
             bankCard.setDateLocked(new GregorianCalendar().getTime());
             atmDao.update(bankCard);
-            logger.info("Bank card with number " + bankCard.getNumber() + " is unlocked");
+            logger.info(INFO_BANK_CARD_UNLOCKED + bankCard.getNumber());
         }
     }
 

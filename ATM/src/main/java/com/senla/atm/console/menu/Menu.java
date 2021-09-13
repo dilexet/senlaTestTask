@@ -1,16 +1,9 @@
-package com.senla.atm.console;
+package com.senla.atm.console.menu;
 
 public class Menu {
-    private String name;
+    private String title;
     private MenuItem[] menuItems;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public MenuItem[] getMenuItems() {
         return menuItems;
@@ -18,5 +11,13 @@ public class Menu {
 
     public void setMenuItems(MenuItem[] menuItems) {
         this.menuItems = menuItems;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
