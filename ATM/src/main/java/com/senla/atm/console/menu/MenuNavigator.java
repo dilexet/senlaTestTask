@@ -24,6 +24,7 @@ public class MenuNavigator {
     public void executeCommand(Integer index, Object obj) throws Exception {
         if (Arrays.stream(currentMenu.getMenuItems()).count() < index) {
             logger.error(ERROR_INDEX_OUT);
+            printMenu();
             return;
         }
         MenuItem menuItem = currentMenu.getMenuItems()[index - 1];

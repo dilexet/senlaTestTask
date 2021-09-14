@@ -1,7 +1,7 @@
 package com.senla.atm.dao.implementation;
 
 import com.senla.atm.dao.IAtmDao;
-import com.senla.atm.entity.BankCard;
+import com.senla.atm.entity.Account;
 import com.senla.atm.util.Converter;
 import com.senla.atm.util.Properties;
 import com.senla.atm.util.filetools.IParser;
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
 
 
 public class AtmFileDao implements IAtmDao {
@@ -31,16 +30,16 @@ public class AtmFileDao implements IAtmDao {
     }
 
     @Override
-    public void update(BankCard bankCard) {
-        List<BankCard> bankCards = getBankCard();
-        var value = bankCards.stream().filter(s -> s.getNumber().equals(bankCard.getNumber())).findFirst().orElse(null);
+    public void update(Account account) {
+        List<Account> accounts = getAccounts();
+        var value = accounts.stream().filter(s -> s.getBankCard().getNumber().equals(account.getBankCard().getNumber())).findFirst().orElse(null);
         if (value == null) {
             logger.error(ERROR_CARD_NOT_FOUND);
         }
-        var index = bankCards.indexOf(value);
-        bankCards.set(index, bankCard);
+        var index = accounts.indexOf(value);
+        accounts.set(index, account);
         StringBuilder data = new StringBuilder();
-        for (var item : bankCards) {
+        for (var item : accounts) {
             data.append(Converter.convertToWritableString(item));
         }
         fileStreamWriter.fileWrite(Properties.getInstance().getProperty(FILE_PATH), data.toString(), false);
@@ -48,11 +47,11 @@ public class AtmFileDao implements IAtmDao {
     }
 
     @Override
-    public BankCard getByCardNumber(String cardNumber) {
+    public Account getByCardNumber(String cardNumber) {
         if (cardNumber == null || cardNumber.equals("")) {
             logger.error(ERROR_CARD_NUMBER_EMPTY);
         }
-        var bankCard = getBankCard().stream().filter(r -> r.getNumber().equals(cardNumber)).findFirst().orElse(null);
+        var bankCard = getAccounts().stream().filter(r -> r.getBankCard().getNumber().equals(cardNumber)).findFirst().orElse(null);
         if (bankCard == null) {
             logger.error(ERROR_CARD_NOT_FOUND);
         }
@@ -60,7 +59,7 @@ public class AtmFileDao implements IAtmDao {
     }
 
     @Override
-    public List<BankCard> getBankCard() {
+    public List<Account> getAccounts() {
         var fileData = fileStreamReader.fileRead(Properties.getInstance().getProperty(FILE_PATH));
         return parser.parseFile(fileData);
     }

@@ -1,5 +1,6 @@
 package com.senla.atm.util.filetools.implementation;
 
+import com.senla.atm.entity.Account;
 import com.senla.atm.entity.BankCard;
 import com.senla.atm.enums.BankCardState;
 import com.senla.atm.util.filetools.IParser;
@@ -25,33 +26,37 @@ public class Parser implements IParser {
         this.dateFormat = dateFormat;
     }
 
-    public List<BankCard> parseFile(String[] lines) {
-        List<BankCard> rooms = new ArrayList<>();
+    public List<Account> parseFile(String[] lines) {
+        List<Account> accounts = new ArrayList<>();
         for (String line : lines) {
             if (!line.equals("")) {
                 String[] values = line.split(String.valueOf(csvSplitBy));
-                rooms.add(converter(values));
+                accounts.add(converter(values));
             }
         }
-        return rooms;
+        return accounts;
     }
 
-    private BankCard converter(String[] values) {
+    private Account converter(String[] values) {
         if (values == null || values[0] == null || values[1] == null || values[2] == null || values[3] == null) {
             logger.error(ERROR_VALUES_IS_NULL);
             return null;
         } else {
             var bankCard = new BankCard();
+            var account = new Account();
+
             bankCard.setNumber(values[0]);
             bankCard.setPassword(Integer.parseInt(values[1]));
-            bankCard.setBalance(Double.parseDouble(values[2]));
-            bankCard.setState(BankCardState.valueOf(values[3]));
-            if (bankCard.getState() == BankCardState.LOCKED && values[4] != null && values[5] != null) {
+            account.setBankCard(bankCard);
+
+            account.setBalance(Double.parseDouble(values[2]));
+            account.setState(BankCardState.valueOf(values[3]));
+            if (account.getState() == BankCardState.LOCKED && values[4] != null && values[5] != null) {
                 var date = values[4] + " " + values[5];
                 Date dateLocked = converterDateLocked(date);
-                bankCard.setDateLocked(dateLocked);
+                account.setDateLocked(dateLocked);
             }
-            return bankCard;
+            return account;
         }
     }
 

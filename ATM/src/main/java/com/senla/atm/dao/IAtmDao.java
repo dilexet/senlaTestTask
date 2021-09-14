@@ -1,13 +1,14 @@
 package com.senla.atm.dao;
 
+import com.senla.atm.entity.Account;
 import com.senla.atm.entity.BankCard;
 
 import java.util.List;
 
 public interface IAtmDao {
-    void update(BankCard bankCard);
+    void update(Account account);
 
-    BankCard getByCardNumber(String id);
+    Account getByCardNumber(String id);
 
-    List<BankCard> getBankCard();
+    List<Account> getAccounts();
 }

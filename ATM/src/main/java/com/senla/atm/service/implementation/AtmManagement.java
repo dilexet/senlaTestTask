@@ -2,7 +2,7 @@ package com.senla.atm.service.implementation;
 
 import com.senla.atm.dao.IAtmDao;
 import com.senla.atm.entity.ATM;
-import com.senla.atm.entity.BankCard;
+import com.senla.atm.entity.Account;
 import com.senla.atm.enums.BankCardState;
 import com.senla.atm.service.IAtmManagement;
 import org.slf4j.Logger;
@@ -22,13 +22,13 @@ public class AtmManagement implements IAtmManagement {
     }
 
     public boolean checkCard(String cardNumber) {
-        var bankCard = atmDao.getByCardNumber(cardNumber);
-        return bankCard != null && bankCard.getState() == BankCardState.ACTIVE;
+        var account = atmDao.getByCardNumber(cardNumber);
+        return account != null && account.getBankCard() != null && account.getState() == BankCardState.ACTIVE;
     }
 
     public boolean authorize(String cardNumber, int password) {
-        var bankCard = atmDao.getByCardNumber(cardNumber);
-        return bankCard != null && bankCard.getPassword() == password;
+        var account = atmDao.getByCardNumber(cardNumber);
+        return account != null && account.getBankCard() != null && account.getBankCard().getPassword() == password;
     }
 
     public double checkBalance(String cardNumber) {
@@ -72,16 +72,16 @@ public class AtmManagement implements IAtmManagement {
     }
 
     public void unlockAll() {
-        atmDao.getBankCard().stream().filter(card -> card.getState() == BankCardState.LOCKED).forEach(this::unlock);
+        atmDao.getAccounts().stream().filter(card -> card.getState() == BankCardState.LOCKED).forEach(this::unlock);
     }
 
-    private void unlock(BankCard bankCard) {
-        boolean result = checkDate(bankCard.getDateLocked());
+    private void unlock(Account account) {
+        boolean result = checkDate(account.getDateLocked());
         if (result) {
-            bankCard.setState(BankCardState.ACTIVE);
-            bankCard.setDateLocked(new GregorianCalendar().getTime());
-            atmDao.update(bankCard);
-            logger.info(INFO_BANK_CARD_UNLOCKED + bankCard.getNumber());
+            account.setState(BankCardState.ACTIVE);
+            account.setDateLocked(new GregorianCalendar().getTime());
+            atmDao.update(account);
+            logger.info(INFO_BANK_CARD_UNLOCKED + account.getBankCard().getNumber());
         }
     }
 
